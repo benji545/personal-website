@@ -1,13 +1,16 @@
-title: Researcher
-url: "https://ankitsultana.com"
+title: Benjamin Reyes
+url: "https://benjaminreyes.com"
 baseurl: "/researcher"
 
 markdown: kramdown
 #ins_logo: "./bits-logo.png"
 
+favicon: true
+favicon_location: "favicon.ico"
+
 tracking_id: #
 
-footer: yes
+footer: false
 footer_url: "https://github.com/ankitsultana"
 footer_text: "Page design by Ankit Sultana"
 
@@ -18,7 +21,7 @@ sass:
 nav:
  - name: "About"
    link: "/researcher/"
- - name: "Resume"
-   link: "resume.pdf"
+ - name: "Projects"
+   link: "/researcher/projects"
  - name: "Contact"
-   link: "contact"
+   link: "/researcher/contact"
