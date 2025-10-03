@@ -42,3 +42,11 @@ title: Projects
   <p><strong>Description:</strong> We built a driving game that uses no keyboard, only hand gestures via computer vision. This won best design at BigRedHacks Hackathon in September 2025. I worked on physics and interpolating computer vision input for controls.</p>
   <p><strong>Links:</strong> <a href="https://www.roadrager.io/">Play it!</a> | <a href="https://devpost.com/software/road-rage-ywr3jv">Devpost</a></p>
 </div>
+
+<div class="project-card">
+  <img src="{{ site.baseurl }}/images/robotdog.jpg" alt="Project 3" class="project-image">
+  <h3>Robot Dog</h3>
+  <p><strong>Tech Stack:</strong> Arduino</p>
+  <p><strong>Description:</strong> A robot dog I started with a friend that is still in progress. The parts were 3D printed, and the movements are programmed in Arduino. I plan on fixing up the controls and creating a remote/UI to control the movement. </p>
+  <p><strong>Links:</strong> <a href="https://github.com/Byounghyun123/robot_dog">GitHub</a></p>
+</div>
