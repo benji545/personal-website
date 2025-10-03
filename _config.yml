@@ -20,8 +20,8 @@ sass:
 
 nav:
  - name: "About"
-   link: "/personal-website/researcher/"
+   link: "/personal-website/"
  - name: "Projects"
-   link: "/personal-website/researcher/projects"
+   link: "/personal-website/projects"
  - name: "Contact"
-   link: "/personal-website/researcher/contact"
+   link: "/personal-website/contact"
