@@ -44,7 +44,7 @@ title: Projects
 </div>
 
 <div class="project-card">
-  <img src="{{ site.baseurl }}/images/arm.png" alt="Project 3" class="project-image">
+  <img src="{{ site.baseurl }}/images/arm.jpg" alt="Project 3" class="project-image">
   <h3>Robot Arm</h3>
   <p><strong>Tech Stack:</strong> Arduino</p>
   <p><strong>Description:</strong> A robot arm designed to help blind people with local navigation. Includes a camera using computer vision to detect objects, an ultrasonic sensor
@@ -55,7 +55,7 @@ title: Projects
 
 
 <div class="project-card">
-  <img src="{{ site.baseurl }}/images/robotdog.png" alt="Project 3" class="project-image">
+  <img src="{{ site.baseurl }}/images/robotdog.png" alt="Project 4" class="project-image">
   <h3>Robot Dog</h3>
   <p><strong>Tech Stack:</strong> Arduino</p>
   <p><strong>Description:</strong> A robot dog I started with a friend that is still in progress. The parts were 3D printed, and the movements are programmed in Arduino. I plan on fixing up the controls and creating a remote/UI to control the movement. </p>
