@@ -44,6 +44,17 @@ title: Projects
 </div>
 
 <div class="project-card">
+  <img src="{{ site.baseurl }}/images/arm.png" alt="Project 3" class="project-image">
+  <h3>Robot Arm</h3>
+  <p><strong>Tech Stack:</strong> Arduino</p>
+  <p><strong>Description:</strong> A robot arm designed to help blind people with local navigation. Includes a camera using computer vision to detect objects, an ultrasonic sensor
+  to detect objects, and motors to maneuver the arm to get a complete view of the surrounding area. The arduino was used to gather data from the ultrasonic sensor, which was then sent
+  by serial to the raspberry pi for processing. </p>
+  <p><strong>Links:</strong> <a href="">GitHub</a></p>
+</div>
+
+
+<div class="project-card">
   <img src="{{ site.baseurl }}/images/robotdog.png" alt="Project 3" class="project-image">
   <h3>Robot Dog</h3>
   <p><strong>Tech Stack:</strong> Arduino</p>
