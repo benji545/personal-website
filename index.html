@@ -25,6 +25,7 @@
   --soft:light-dark(#eef2f9,#151b27);
   --field:light-dark(#2149b0,#173a85);
   --link:light-dark(#1f47a8,#9db8ff);
+  --lab:light-dark(#0f1d3d,#0b1428);
   --sans:"Archivo",system-ui,sans-serif;--serif:"Source Serif 4",Georgia,serif}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -90,6 +91,34 @@ h3{font-size:22px;font-weight:700}
 .social a{padding:10px 0}
 footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mute);border-top:1px solid var(--line)}
 
+/* lab */
+.lab{background:var(--lab);color:#dfe7f8}
+.lab h2,.lab h3{color:#fff}
+.lab .intro{margin:-12px 0 8px;max-width:36em;color:#b9c7e6}
+.sim{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:clamp(24px,4vw,52px);padding:clamp(32px,4vw,48px) 0;border-top:1px solid rgba(255,255,255,.14)}
+.sim:first-of-type{border-top:0}
+.sim h3{font-size:clamp(26px,3vw,34px);font-stretch:90%}
+.sim p{margin:12px 0 0;font-size:16px;color:#c3cfea;max-width:34em}
+.sim .eq{font-style:italic;color:#9fb4e0;font-size:16px}
+.ctrls{margin-top:20px;display:grid;gap:12px}
+.ctrls label{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;font:600 16px/1.2 var(--sans);color:#fff}
+.ctrls input[type=range]{flex:1 1 160px;height:44px;accent-color:#9db8ff;cursor:pointer;background:transparent}
+.ctrls output{font:700 20px/1 var(--sans);min-width:3.2ch;font-variant-numeric:tabular-nums}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btns button{font:600 15px/1 var(--sans);color:#fff;background:transparent;border:1px solid rgba(255,255,255,.38);border-radius:6px;min-height:44px;padding:0 14px;cursor:pointer}
+.btns button:hover{background:rgba(255,255,255,.08)}
+.btns button[aria-pressed=true]{background:#fff;color:var(--lab);border-color:#fff}
+.read{font:600 16px/1.4 var(--sans);color:#fff;min-height:1.4em}
+.panels{display:grid;gap:12px;align-content:start}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.panel{margin:0;background:#081124;border-radius:6px;overflow:hidden}
+.panel .cv{position:relative}
+.panel canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panel figcaption{padding:8px 12px 10px;font:14px/1.4 var(--sans);color:#93a6cf;border-top:1px solid rgba(255,255,255,.08)}
+.sq{aspect-ratio:1}.wide{height:110px}.scope{aspect-ratio:16/10}.bif{height:200px;cursor:crosshair}
+@media (max-width:860px){.sim{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:420px){.two{grid-template-columns:minmax(0,1fr)}}
+
 @media (max-width:760px){
   .about{grid-template-columns:minmax(0,1fr)}
   .photo{max-width:260px}
@@ -105,6 +134,7 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
     <a class="me" href="#top">Benjamin Reyes</a>
     <nav aria-label="Sections">
       <a href="#about">About</a>
+      <a href="#lab">Lab</a>
       <a href="#projects">Projects</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -135,6 +165,57 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
       <p>AI is changing what engineering work looks like, and fast. I think that makes the fundamentals more valuable, not less. They're what tell you what's worth building and whether it actually works.</p>
       <p>I do research in the <a href="https://iontrap.aep.cornell.edu/">Katz Lab</a>, and outside of class I build things: games, robots, and most recently a low-power chip for detecting neural signals. I also play violin, box, and read philosophy.</p>
     </div>
+  </div>
+</section>
+
+<section class="band lab" id="lab" aria-labelledby="lab-h">
+  <div class="wrap">
+    <h2 id="lab-h">Lab</h2>
+    <p class="intro">Two systems from my nonlinear dynamics and chaos class, simulated live in your browser.</p>
+
+    <article class="sim" aria-labelledby="sync-h">
+      <div>
+        <h3 id="sync-h">Synchronization</h3>
+        <p>Sixty-four oscillators, each with its own natural frequency, every one pulled toward the group's average phase with coupling strength K. Weak coupling leaves them drifting on their own. Past a critical value they lock together, the way fireflies, pacemaker cells in the heart, and generators on a power grid fall into step.</p>
+        <p class="eq">dθ<sub>i</sub>/dt = ω<sub>i</sub> + K r sin(ψ − θ<sub>i</sub>)</p>
+        <p>This is the Kuramoto model. For this spread of frequencies, locking starts near K ≈ <span id="kc">1</span>.</p>
+        <div class="ctrls">
+          <label for="k">Coupling K <input id="k" type="range" min="0" max="3" step="0.05" value="1.8"> <output id="kv" for="k">1.80</output></label>
+          <div class="btns"><button type="button" id="scr">Scramble phases</button><button type="button" id="syncPlay">Pause</button></div>
+          <div class="read" id="rv" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="panels">
+        <div class="two">
+          <figure class="panel"><div class="cv sq"><canvas id="ring" role="img" aria-label="Oscillator phases on a circle with the average phase as an arrow"></canvas></div><figcaption>Phases on a circle. The arrow is the average; its length is r.</figcaption></figure>
+          <figure class="panel"><div class="cv sq"><canvas id="flies" role="img" aria-label="Grid of lights that flash as each oscillator passes phase zero"></canvas></div><figcaption>Each light flashes as its oscillator passes phase zero.</figcaption></figure>
+        </div>
+        <figure class="panel"><div class="cv wide"><canvas id="rplot" role="img" aria-label="Order parameter r over the last 20 seconds"></canvas></div><figcaption>Order parameter r over the last 20 seconds: 0 is disorder, 1 is perfect sync.</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="sim" aria-labelledby="chua-h">
+      <div>
+        <h3 id="chua-h">Chua's circuit</h3>
+        <p>The simplest electronic circuit that behaves chaotically: two capacitors, an inductor, a resistor, and one nonlinear negative resistance called a Chua diode. Turn up α, the ratio of the two capacitors, and the oscillation doubles its period, turns chaotic in one lobe, and then starts jumping unpredictably between two: the double scroll.</p>
+        <p class="eq">ẋ = α(y − x − f(x)), ẏ = x − y + z, ż = −βy</p>
+        <div class="ctrls">
+          <label for="a">α <input id="a" type="range" min="7" max="11" step="0.01" value="10"> <output id="av" for="a">10.00</output></label>
+          <div class="btns" id="pre">
+            <button type="button" data-a="8">Limit cycle</button>
+            <button type="button" data-a="8.55">Period 2</button>
+            <button type="button" data-a="8.9">Single scroll</button>
+            <button type="button" data-a="10">Double scroll</button>
+          </div>
+          <div class="btns"><button type="button" id="chuaPlay">Pause</button></div>
+          <div class="read" id="regime" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="panels">
+        <figure class="panel"><div class="cv scope"><canvas id="scope" role="img" aria-label="Oscilloscope view of the Chua circuit in the x–y plane"></canvas></div><figcaption>Scope in XY mode: the two capacitor voltages, x across and y up.</figcaption></figure>
+        <figure class="panel"><div class="cv bif"><canvas id="bif" role="img" aria-label="Bifurcation diagram of peaks of x against alpha"></canvas></div><figcaption>Bifurcation diagram: the peaks of x for each α from 7 to 11. Click or drag to set α.</figcaption></figure>
+      </div>
+    </article>
   </div>
 </section>
 
@@ -245,6 +326,259 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
   slider.addEventListener('input', () => { N = +slider.value; out.value = N; out.textContent = N; draw(); });
   new ResizeObserver(size).observe(cv);
   requestAnimationFrame(t => { last = t; tick(t); });
+}
+</script>
+<script>
+{
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const TAU = 2 * Math.PI;
+  const wrap = x => ((x + Math.PI) % TAU + TAU) % TAU - Math.PI;
+
+  // canvas sizing: calls onSize(w, h, ctx) whenever the box changes
+  function fit(c, onSize) {
+    new ResizeObserver(() => {
+      const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+      c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+      const g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0);
+      onSize(r.width, r.height, g);
+    }).observe(c);
+  }
+  // animation loop that only runs while visible and not paused
+  function loop(el, btn, step) {
+    let playing = !reduce.matches, visible = false, last = 0, raf = 0;
+    const label = () => { btn.textContent = playing ? 'Pause' : 'Play'; };
+    const frame = t => {
+      raf = 0;
+      if (!(playing && visible)) return;
+      const dt = last ? Math.min((t - last) / 1000, 0.05) : 0; last = t;
+      step(dt); raf = requestAnimationFrame(frame);
+    };
+    const kick = () => { if (playing && visible && !raf) { last = 0; raf = requestAnimationFrame(frame); } };
+    btn.addEventListener('click', () => { playing = !playing; label(); kick(); });
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; kick(); }, { rootMargin: '100px' }).observe(el);
+    label();
+    return () => step(0);
+  }
+
+  // ---------- Kuramoto synchronization ----------
+  {
+    const N = 64, w0 = TAU * 0.6, sig = 0.6;
+    let seed = 11; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+    const erfinv = x => { const a = 0.147, l = Math.log(1 - x * x), t = 2 / (Math.PI * a) + l / 2; return Math.sign(x) * Math.sqrt(Math.sqrt(t * t - l / a) - t); };
+    const om = Array.from({ length: N }, (_, i) => w0 + sig * Math.SQRT2 * erfinv(2 * (i + 0.5) / N - 1));
+    for (let i = N - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [om[i], om[j]] = [om[j], om[i]]; }
+    const th = new Float64Array(N), hist = [];
+    let K = 1.8, t = 0, r = 0, psi = 0, tick = 0;
+    const kIn = document.getElementById('k'), kOut = document.getElementById('kv'), rv = document.getElementById('rv');
+    document.getElementById('kc').textContent = (2 * sig * Math.sqrt(TAU) / Math.PI).toFixed(2);
+    const order = () => { let c = 0, s = 0; for (let i = 0; i < N; i++) { c += Math.cos(th[i]); s += Math.sin(th[i]); } r = Math.hypot(c, s) / N; psi = Math.atan2(s, c); };
+    const scramble = () => { for (let i = 0; i < N; i++) th[i] = rnd() * TAU; hist.length = 0; order(); };
+    scramble();
+
+    const ring = document.getElementById('ring'), flies = document.getElementById('flies'), rp = document.getElementById('rplot');
+    let R = {}, F = {}, P = {};
+    fit(ring, (w, h, g) => { R = { w, h, g }; draw(); });
+    fit(flies, (w, h, g) => { F = { w, h, g }; draw(); });
+    fit(rp, (w, h, g) => { P = { w, h, g }; draw(); });
+
+    function draw() {
+      if (R.g) {
+        const { w, h, g } = R, cx = w / 2, cy = h / 2, rad = Math.min(w, h) * 0.38;
+        g.clearRect(0, 0, w, h);
+        g.strokeStyle = 'rgba(255,255,255,.2)'; g.lineWidth = 1.5;
+        g.beginPath(); g.arc(cx, cy, rad, 0, TAU); g.stroke();
+        const frame = w0 * t;   // rotate with the average frequency so a locked cluster sits still
+        g.fillStyle = '#e4ecff';
+        for (let i = 0; i < N; i++) {
+          const a = th[i] - frame;
+          g.beginPath(); g.arc(cx + rad * Math.cos(a), cy - rad * Math.sin(a), Math.max(3, rad * 0.045), 0, TAU); g.fill();
+        }
+        const a = psi - frame, ex = cx + rad * r * Math.cos(a), ey = cy - rad * r * Math.sin(a);
+        g.strokeStyle = '#8fb0ff'; g.fillStyle = '#8fb0ff'; g.lineWidth = 3; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(cx, cy); g.lineTo(ex, ey); g.stroke();
+        g.beginPath(); g.arc(cx, cy, 3.5, 0, TAU); g.fill();
+        if (r > 0.08) { const hs = 9; g.beginPath(); g.moveTo(ex, ey); g.lineTo(ex - hs * Math.cos(a - 0.45), ey + hs * Math.sin(a - 0.45)); g.lineTo(ex - hs * Math.cos(a + 0.45), ey + hs * Math.sin(a + 0.45)); g.closePath(); g.fill(); }
+      }
+      if (F.g) {
+        const { w, h, g } = F, n = 8, cell = Math.min(w, h) / (n + 0.6), ox = (w - cell * n) / 2, oy = (h - cell * n) / 2;
+        g.clearRect(0, 0, w, h);
+        for (let i = 0; i < N; i++) {
+          const x = ox + cell * (i % n + 0.5), y = oy + cell * (Math.floor(i / n) + 0.5);
+          const b = Math.exp(-(wrap(th[i]) ** 2) / 0.12);
+          if (b > 0.04) {
+            const gr = g.createRadialGradient(x, y, 0, x, y, cell * 0.62);
+            gr.addColorStop(0, `rgba(214,229,255,${0.75 * b})`); gr.addColorStop(1, 'rgba(214,229,255,0)');
+            g.fillStyle = gr; g.fillRect(x - cell * 0.62, y - cell * 0.62, cell * 1.24, cell * 1.24);
+          }
+          g.fillStyle = `rgb(${Math.round(40 + 215 * b)},${Math.round(56 + 199 * b)},${Math.round(98 + 157 * b)})`;
+          g.beginPath(); g.arc(x, y, cell * 0.2, 0, TAU); g.fill();
+        }
+      }
+      if (P.g) {
+        const { w, h, g } = P, left = 26, top = 10, bot = h - 12, span = 20;
+        const Y = v => bot - v * (bot - top);
+        g.clearRect(0, 0, w, h);
+        g.font = '13px Archivo, system-ui, sans-serif'; g.fillStyle = '#93a6cf'; g.textBaseline = 'middle';
+        g.fillText('1', 8, Y(1)); g.fillText('0', 8, Y(0));
+        g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 1;
+        g.beginPath(); g.moveTo(left, Y(1)); g.lineTo(w - 8, Y(1)); g.moveTo(left, Y(0)); g.lineTo(w - 8, Y(0)); g.stroke();
+        if (hist.length > 1) {
+          const tEnd = hist[hist.length - 1][0], X = s => left + (w - 8 - left) * (1 - (tEnd - s) / span);
+          g.strokeStyle = '#8fb0ff'; g.lineWidth = 2; g.beginPath();
+          hist.forEach(([s, v], j) => j ? g.lineTo(X(s), Y(v)) : g.moveTo(X(s), Y(v)));
+          g.stroke();
+        }
+      }
+    }
+    function readout() {
+      const state = r > 0.8 ? 'locked' : r > 0.35 ? 'partly locked' : 'drifting independently';
+      rv.textContent = `r = ${r.toFixed(2)}, ${state}`;
+    }
+    const step = dt => {
+      const hstep = 1 / 240, n = Math.round(dt / hstep);
+      for (let k = 0; k < n; k++) {
+        order();
+        for (let i = 0; i < N; i++) th[i] += hstep * (om[i] + K * r * Math.sin(psi - th[i]));
+        t += hstep;
+      }
+      order();
+      hist.push([t, r]); while (hist.length && t - hist[0][0] > 20) hist.shift();
+      draw(); if (tick++ % 8 === 0) readout();
+    };
+    const redraw = loop(document.getElementById('sync-h').closest('.sim'), document.getElementById('syncPlay'), step);
+    kIn.addEventListener('input', () => { K = +kIn.value; kOut.textContent = kOut.value = K.toFixed(2); });
+    document.getElementById('scr').addEventListener('click', () => { scramble(); draw(); readout(); });
+    readout();
+  }
+
+  // ---------- Chua's circuit ----------
+  {
+    const m0 = -8 / 7, m1 = -5 / 7, beta = 14.87, A0 = 7, A1 = 11, H = 0.005;
+    const fx = x => m1 * x + 0.5 * (m0 - m1) * (Math.abs(x + 1) - Math.abs(x - 1));
+    // one RK4 step on s = [x, y, z]
+    const d = (x, y, z, a) => [a * (y - x - fx(x)), x - y + z, -beta * y];
+    function rk4(s, a, h) {
+      const [x, y, z] = s;
+      const k1 = d(x, y, z, a);
+      const k2 = d(x + h / 2 * k1[0], y + h / 2 * k1[1], z + h / 2 * k1[2], a);
+      const k3 = d(x + h / 2 * k2[0], y + h / 2 * k2[1], z + h / 2 * k2[2], a);
+      const k4 = d(x + h * k3[0], y + h * k3[1], z + h * k3[2], a);
+      s[0] = x + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]);
+      s[1] = y + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+      s[2] = z + h / 6 * (k1[2] + 2 * k2[2] + 2 * k3[2] + k4[2]);
+      if (!(Math.abs(s[0]) < 20)) { s[0] = 0.1; s[1] = 0; s[2] = 0; }
+    }
+
+    const aIn = document.getElementById('a'), aOut = document.getElementById('av'), reg = document.getElementById('regime');
+    const pre = [...document.querySelectorAll('#pre button')];
+    let alpha = +aIn.value;
+    const s = [0.1, 0, 0];
+
+    // scope: redraw the recent trail each frame, older points fainter
+    const sc = document.getElementById('scope'); let S = {};
+    const TRAIL = 6000, buf = new Float32Array(TRAIL * 2); let head = 0, count = 0;
+    const sx = x => S.w / 2 + x / 2.8 * (S.w / 2), sy = y => S.h / 2 - y / 0.52 * (S.h / 2);
+    fit(sc, (w, h, g) => { S = { w, h, g }; drawScope(); });
+    function drawScope() {
+      if (!S.g) return;
+      const { w, h, g } = S;
+      g.fillStyle = '#081124'; g.fillRect(0, 0, w, h);
+      g.strokeStyle = 'rgba(255,255,255,.09)'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.moveTo(w / 2, 0); g.lineTo(w / 2, h); g.stroke();
+      if (count < 2) return;
+      const CH = 30, per = Math.ceil(count / CH), start = (head - count + TRAIL) % TRAIL;
+      g.lineJoin = 'round'; g.lineCap = 'round';
+      for (let c = 0; c < CH; c++) {
+        const i0 = c * per, i1 = Math.min(count - 1, (c + 1) * per);
+        if (i0 >= i1) break;
+        const age = (c + 1) / CH;
+        g.strokeStyle = `rgba(180,203,255,${(0.08 + 0.92 * age * age).toFixed(3)})`;
+        g.lineWidth = c === CH - 1 ? 2 : 1.4;
+        g.beginPath();
+        for (let i = i0; i <= i1; i++) { const k = ((start + i) % TRAIL) * 2; i === i0 ? g.moveTo(sx(buf[k]), sy(buf[k + 1])) : g.lineTo(sx(buf[k]), sy(buf[k + 1])); }
+        g.stroke();
+      }
+      const k = ((head - 1 + TRAIL) % TRAIL) * 2;
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(sx(buf[k]), sy(buf[k + 1]), 3, 0, TAU); g.fill();
+    }
+    function stepScope(dt) {
+      const n = Math.round(dt * 7 / H);   // about 7 time units of the circuit per second
+      for (let i = 0; i < n; i++) {
+        rk4(s, alpha, H);
+        buf[head * 2] = s[0]; buf[head * 2 + 1] = s[1];
+        head = (head + 1) % TRAIL; count = Math.min(TRAIL, count + 1);
+      }
+      drawScope();
+    }
+
+    // bifurcation diagram, computed in slices so the page stays responsive
+    const bc = document.getElementById('bif'); let B = {};
+    const COLS = 320, cols = [];
+    const ba = i => A0 + (A1 - A0) * i / (COLS - 1);
+    const bx = a => 8 + (B.w - 16) * (a - A0) / (A1 - A0), by = v => B.h - 28 - (v + 1.75) / 4.3 * (B.h - 40);
+    fit(bc, (w, h, g) => { B = { w, h, g }; drawBif(); });
+    function computeSlice(i0) {
+      const st = [0.1, 0, 0];
+      for (let i = i0; i < Math.min(COLS, i0 + 16); i++) {
+        const a = ba(i), mx = []; let lo = Infinity, hi = -Infinity, p1 = 0, p2 = 0;
+        if (i > 0 && cols[i - 1].last) st.splice(0, 3, ...cols[i - 1].last);
+        for (let k = 0; k < 4000; k++) rk4(st, a, 0.01);
+        for (let k = 0; k < 6000; k++) {
+          rk4(st, a, 0.01);
+          const x = st[0]; lo = Math.min(lo, x); hi = Math.max(hi, x);
+          if (k > 1 && p1 > p2 && p1 > x) mx.push(p1);
+          p2 = p1; p1 = x;
+        }
+        cols[i] = { a, mx, lo, hi, last: st.slice() };
+      }
+      drawBif();
+      if (i0 + 16 < COLS) setTimeout(() => computeSlice(i0 + 16), 0); else regime();
+    }
+    function drawBif() {
+      if (!B.g) return;
+      const { w, h, g } = B; g.clearRect(0, 0, w, h);
+      g.fillStyle = 'rgba(205,220,255,.75)';
+      for (const c of cols) if (c) { const x = bx(c.a); for (const v of c.mx) g.fillRect(x - 0.6, by(v) - 0.6, 1.4, 1.4); }
+      g.font = '13px Archivo, system-ui, sans-serif'; g.fillStyle = '#93a6cf'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+      for (let a = 7; a <= 11; a++) g.fillText(a, Math.min(Math.max(bx(a), 10), w - 10), h - 8);
+      const x = bx(alpha); g.strokeStyle = '#ffffff'; g.lineWidth = 1.5;
+      g.beginPath(); g.moveTo(x, 6); g.lineTo(x, h - 24); g.stroke();
+    }
+    function regime() {
+      const c = cols[Math.round((alpha - A0) / (A1 - A0) * (COLS - 1))];
+      if (!c) { reg.textContent = ''; return; }
+      // periodic if the sequence of peaks repeats with some period p
+      const m = c.mx.slice(-24); let per = 0;
+      for (let p = 1; p <= 8 && m.length >= p + 4; p++) {
+        let ok = true;
+        for (let i = p; i < m.length; i++) if (Math.abs(m[i] - m[i - p]) > 0.004) { ok = false; break; }
+        if (ok) { per = p; break; }
+      }
+      const both = c.lo < -0.8 && c.hi > 0.8;
+      let txt;
+      if (c.hi - c.lo < 1e-3 || c.mx.length < 2) txt = 'Steady state';
+      else if (per === 1) txt = 'Periodic: a single loop (limit cycle)';
+      else if (per > 1) txt = `Periodic: period ${per}` + (both ? ', around both lobes' : '');
+      else txt = both ? 'Chaotic: double scroll' : 'Chaotic: single scroll';
+      reg.textContent = `α = ${alpha.toFixed(2)}: ${txt}`;
+    }
+    function setAlpha(a) {
+      alpha = Math.min(A1, Math.max(A0, Math.round(a * 100) / 100));
+      aIn.value = alpha; aOut.textContent = aOut.value = alpha.toFixed(2);
+      pre.forEach(b => b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.a - alpha) < 0.005)));
+      drawBif(); regime();
+    }
+    aIn.addEventListener('input', () => setAlpha(+aIn.value));
+    pre.forEach(b => b.addEventListener('click', () => setAlpha(+b.dataset.a)));
+    const fromPointer = e => { const r = bc.getBoundingClientRect(); setAlpha(A0 + (A1 - A0) * (e.clientX - r.left - 8) / (r.width - 16)); };
+    let drag = false;
+    bc.addEventListener('pointerdown', e => { drag = true; bc.setPointerCapture(e.pointerId); fromPointer(e); });
+    bc.addEventListener('pointermove', e => { if (drag) fromPointer(e); });
+    bc.addEventListener('pointerup', () => { drag = false; });
+    setAlpha(alpha);
+    loop(document.getElementById('chua-h').closest('.sim'), document.getElementById('chuaPlay'), stepScope);
+    setTimeout(() => computeSlice(0), 300);
+  }
 }
 </script>
 </body>
