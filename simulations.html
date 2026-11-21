@@ -11,6 +11,8 @@
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#2149b0">
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<script defer src="vendor/katex/katex.min.js" onload="window.renderMath && window.renderMath()"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap" rel="stylesheet">
@@ -109,7 +111,13 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
 .sim:first-of-type{border-top:0}
 .sim h3{font-size:clamp(26px,3vw,34px);font-stretch:90%}
 .sim p{margin:12px 0 0;font-size:16px;color:#c3cfea;max-width:34em}
-.sim .eq{font-style:italic;color:#9fb4e0;font-size:16px}
+.sim .eq{margin:18px 0 0;color:#fff;font-size:22px;overflow-x:auto;overflow-y:hidden;padding:4px 0}
+.sim .eq:not(.tex){font:italic 16px/1.5 var(--serif);color:#9fb4e0}
+.sim .eq .katex-display{margin:0;text-align:left}
+.sim .eq .katex-display>.katex{text-align:left}
+.sim .eq.small{font-size:18px;margin-top:10px;color:#c3cfea}
+@media (max-width:600px){.sim .eq{font-size:19px}.sim .eq.small{font-size:14px}}
+@media (max-width:380px){.sim .eq.small{font-size:13px}}
 .ctrls{margin-top:20px;display:grid;gap:12px}
 .ctrls label{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;font:600 16px/1.2 var(--sans);color:#fff}
 .ctrls input[type=range]{flex:1 1 160px;height:44px;accent-color:#9db8ff;cursor:pointer;background:transparent}
@@ -173,7 +181,7 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
           <h3 id="four-h">Fourier series</h3>
           <p>Any periodic signal is a sum of sine waves at whole-number multiples of its fundamental frequency. Pick a waveform, then add harmonics with the slider, or click bars in the spectrum to switch single harmonics on and off.</p>
           <p id="fnote"></p>
-          <p class="eq" id="feq"></p>
+          <div class="eq" id="feq"></div>
         </div>
         <div class="ctrls">
           <div class="btns" id="fwave" role="group" aria-label="Waveform">
@@ -200,7 +208,8 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
       <div>
         <h3 id="sync-h">Synchronization</h3>
         <p>Sixty-four oscillators, each with its own natural frequency, every one pulled toward the group's average phase with coupling strength K. Weak coupling leaves them drifting on their own. Past a critical value they lock together, the way fireflies, pacemaker cells in the heart, and generators on a power grid fall into step.</p>
-        <p class="eq">dθ<sub>i</sub>/dt = ω<sub>i</sub> + K r sin(ψ − θ<sub>i</sub>)</p>
+        <div class="eq" data-tex="\frac{d\theta_i}{dt} = \omega_i + K\,r\,\sin(\psi - \theta_i)">dθ<sub>i</sub>/dt = ω<sub>i</sub> + K r sin(ψ − θ<sub>i</sub>)</div>
+        <div class="eq small" data-tex="r\,e^{i\psi} = \frac{1}{N}\sum_{j=1}^{N} e^{i\theta_j}">r e<sup>iψ</sup> = (1/N) Σ e<sup>iθ<sub>j</sub></sup></div>
         <p>This is the Kuramoto model. For this spread of frequencies, locking starts near K ≈ <span id="kc">1</span>.</p>
         <div class="ctrls">
           <label for="k">Coupling K <input id="k" type="range" min="0" max="3" step="0.05" value="1.8"> <output id="kv" for="k">1.80</output></label>
@@ -221,7 +230,8 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
       <div>
         <h3 id="chua-h">Chua's circuit</h3>
         <p>The simplest electronic circuit that behaves chaotically: two capacitors, an inductor, a resistor, and one nonlinear negative resistance called a Chua diode. Turn up α, the ratio of the two capacitors, and the oscillation doubles its period, turns chaotic in one lobe, and then starts jumping unpredictably between two: the double scroll.</p>
-        <p class="eq">ẋ = α(y − x − f(x)), ẏ = x − y + z, ż = −βy</p>
+        <div class="eq" data-tex="\begin{aligned} \dot{x} &amp;= \alpha\,\bigl(y - x - f(x)\bigr) \\ \dot{y} &amp;= x - y + z \\ \dot{z} &amp;= -\beta\,y \end{aligned}">ẋ = α(y − x − f(x)), ẏ = x − y + z, ż = −βy</div>
+        <div class="eq small" data-tex="f(x) = m_1 x + \tfrac{1}{2}(m_0 - m_1)\bigl(|x+1| - |x-1|\bigr)">f(x) = m<sub>1</sub>x + ½(m<sub>0</sub> − m<sub>1</sub>)(|x+1| − |x−1|)</div>
         <div class="ctrls">
           <label for="a">α <input id="a" type="range" min="7" max="11" step="0.01" value="10"> <output id="av" for="a">10.00</output></label>
           <div class="btns" id="pre">
@@ -248,6 +258,14 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
 
 <script>
 {
+  // typeset every [data-tex] element with KaTeX once it has loaded; plain text stays as the fallback
+  window.renderMath = () => {
+    if (!window.katex) return;
+    for (const el of document.querySelectorAll('[data-tex]')) {
+      if (el.classList.contains('tex')) continue;
+      try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false }); el.classList.add('tex'); } catch (e) {}
+    }
+  };
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const TAU = 2 * Math.PI;
   const wrap = x => ((x + Math.PI) % TAU + TAU) % TAU - Math.PI;
@@ -283,14 +301,14 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
     const KMAX = 40;
     const W = {
       square:   { b: k => k % 2 ? 4 / (Math.PI * k) : 0, f: x => (wrap(x) >= 0 ? 1 : -1),
-                  eq: 'x(t) = (4/π) Σ sin(kωt)/k, odd k only',
+                  eq: 'x(t) = (4/π) Σ sin(kωt)/k, odd k only', tex: String.raw`x(t) = \frac{4}{\pi} \sum_{k\ \text{odd}} \frac{\sin(k\omega_0 t)}{k}`,
                   note: 'Only odd harmonics, falling off as 1/k. The ripple at each jump never shrinks below about 9% of the jump: the Gibbs phenomenon.' },
       triangle: { b: k => k % 2 ? (8 / (Math.PI * Math.PI)) * ((k - 1) / 2 % 2 ? -1 : 1) / (k * k) : 0,
                   f: x => { const u = wrap(x); return Math.abs(u) <= Math.PI / 2 ? 2 * u / Math.PI : Math.sign(u) * (2 - 2 * Math.abs(u) / Math.PI); },
-                  eq: 'x(t) = (8/π²) Σ (−1)^((k−1)/2) sin(kωt)/k², odd k only',
+                  eq: 'x(t) = (8/π²) Σ (−1)^((k−1)/2) sin(kωt)/k², odd k only', tex: String.raw`x(t) = \frac{8}{\pi^2} \sum_{k\ \text{odd}} (-1)^{\frac{k-1}{2}}\,\frac{\sin(k\omega_0 t)}{k^2}`,
                   note: 'Only odd harmonics, falling off as 1/k², so a handful already looks right. No jumps means no Gibbs ripple.' },
       saw:      { b: k => (k % 2 ? 1 : -1) * 2 / (Math.PI * k), f: x => wrap(x) / Math.PI,
-                  eq: 'x(t) = (2/π) Σ (−1)^(k+1) sin(kωt)/k, every k',
+                  eq: 'x(t) = (2/π) Σ (−1)^(k+1) sin(kωt)/k, every k', tex: String.raw`x(t) = \frac{2}{\pi} \sum_{k=1}^{\infty} (-1)^{k+1}\,\frac{\sin(k\omega_0 t)}{k}`,
                   note: 'Every harmonic, falling off as 1/k. This is close to how a bowed violin string moves, which is why its sound is so rich in overtones.' },
     };
     let wave = 'square', on = new Array(KMAX + 1).fill(false), last = 0, db = false;
@@ -316,7 +334,8 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
       nIn.value = Math.max(1, h); nOut.textContent = nOut.value = String(Math.max(1, h));
       wBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.w === wave)));
       dbBtn.setAttribute('aria-pressed', String(db));
-      feq.textContent = W[wave].eq; fnote.textContent = W[wave].note;
+      if (feq.dataset.tex !== W[wave].tex) { feq.dataset.tex = W[wave].tex; feq.textContent = W[wave].eq; feq.classList.remove('tex'); window.renderMath && window.renderMath(); }
+      fnote.textContent = W[wave].note;
       // error and overshoot measured over one period
       let se = 0, sr = 0, mx = -Infinity; const M = 2000;
       for (let i = 0; i < M; i++) { const x = -Math.PI + TAU * (i + 0.5) / M, y = sum(x), t = W[wave].f(x); se += (y - t) ** 2; sr += t * t; mx = Math.max(mx, y); }
