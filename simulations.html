@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulations: Benjamin Reyes</title>
-<meta name="description" content="Interactive simulations of coupled-oscillator synchronization and Chua's chaotic circuit, by Benjamin Reyes.">
+<meta name="description" content="Interactive simulations of Fourier series, coupled-oscillator synchronization and Chua's chaotic circuit, by Benjamin Reyes.">
 <meta property="og:title" content="Simulations: Benjamin Reyes">
-<meta property="og:description" content="Coupled-oscillator synchronization and Chua's chaotic circuit, live in your browser.">
+<meta property="og:description" content="Fourier series, coupled-oscillator synchronization and Chua's chaotic circuit, live in your browser.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -126,6 +126,12 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
 .panel canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .panel figcaption{padding:8px 12px 10px;font:14px/1.4 var(--sans);color:#93a6cf;border-top:1px solid rgba(255,255,255,.08)}
 .sq{aspect-ratio:1}.wide{height:110px}.scope{aspect-ratio:16/10}.bif{height:200px;cursor:crosshair}
+.sim.full{grid-template-columns:minmax(0,1fr)}
+.fhead{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr);gap:clamp(20px,4vw,52px);align-items:start}
+.fhead .ctrls{margin-top:6px}
+.plot{height:clamp(220px,26vw,300px)}
+.fspec{cursor:pointer}
+@media (max-width:860px){.fhead{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:860px){.sim{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:420px){.two{grid-template-columns:minmax(0,1fr)}}
 .pagehead{background:var(--field);color:#fff;padding-top:clamp(28px,5vw,64px);padding-bottom:clamp(28px,4vw,48px)}
@@ -154,12 +160,41 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
 <section class="band pagehead" aria-labelledby="sim-h">
   <div class="wrap">
     <h1 id="sim-h">Simulations</h1>
-    <p>Two systems from my nonlinear dynamics and chaos class, running live in your browser. Drag the sliders and watch what changes.</p>
+    <p>Signals and dynamical systems from my coursework, running live in your browser. Drag the sliders and watch what changes.</p>
   </div>
 </section>
 
 <section class="band lab" aria-label="Simulations">
   <div class="wrap">
+
+    <article class="sim full" aria-labelledby="four-h">
+      <div class="fhead">
+        <div>
+          <h3 id="four-h">Fourier series</h3>
+          <p>Any periodic signal is a sum of sine waves at whole-number multiples of its fundamental frequency. Pick a waveform, then add harmonics with the slider, or click bars in the spectrum to switch single harmonics on and off.</p>
+          <p id="fnote"></p>
+          <p class="eq" id="feq"></p>
+        </div>
+        <div class="ctrls">
+          <div class="btns" id="fwave" role="group" aria-label="Waveform">
+            <button type="button" data-w="square">Square</button>
+            <button type="button" data-w="triangle">Triangle</button>
+            <button type="button" data-w="saw">Sawtooth</button>
+          </div>
+          <label for="fn">Harmonics up to <input id="fn" type="range" min="1" max="40" step="1" value="7"> <output id="fnv" for="fn">7</output></label>
+          <div class="btns">
+            <button type="button" id="fminus">Remove harmonic</button>
+            <button type="button" id="fplus">Add harmonic</button>
+            <button type="button" id="fdb" aria-pressed="false">dB scale</button>
+          </div>
+          <div class="read" id="fread" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="two">
+        <figure class="panel"><div class="cv plot"><canvas id="ftime" role="img" aria-label="Time-domain waveform: the target wave and the sum of the chosen harmonics"></canvas></div><figcaption>Time domain: the target wave (dashed), the sum of the active harmonics (white), and the last harmonic you changed (blue).</figcaption></figure>
+        <figure class="panel"><div class="cv plot fspec"><canvas id="fspec" role="img" aria-label="Frequency spectrum: amplitude of each harmonic"></canvas></div><figcaption>Frequency spectrum: amplitude of each harmonic. Solid bars are in the sum; click a bar to toggle it.</figcaption></figure>
+      </div>
+    </article>
 
     <article class="sim" aria-labelledby="sync-h">
       <div>
@@ -241,6 +276,116 @@ footer{padding:22px max(5vw,18px) 32px;font:14px/1.4 var(--sans);color:var(--mut
     new IntersectionObserver(es => { visible = es[0].isIntersecting; kick(); }, { rootMargin: '100px' }).observe(el);
     label();
     return () => step(0);
+  }
+
+  // ---------- Fourier series ----------
+  {
+    const KMAX = 40;
+    const W = {
+      square:   { b: k => k % 2 ? 4 / (Math.PI * k) : 0, f: x => (wrap(x) >= 0 ? 1 : -1),
+                  eq: 'x(t) = (4/π) Σ sin(kωt)/k, odd k only',
+                  note: 'Only odd harmonics, falling off as 1/k. The ripple at each jump never shrinks below about 9% of the jump: the Gibbs phenomenon.' },
+      triangle: { b: k => k % 2 ? (8 / (Math.PI * Math.PI)) * ((k - 1) / 2 % 2 ? -1 : 1) / (k * k) : 0,
+                  f: x => { const u = wrap(x); return Math.abs(u) <= Math.PI / 2 ? 2 * u / Math.PI : Math.sign(u) * (2 - 2 * Math.abs(u) / Math.PI); },
+                  eq: 'x(t) = (8/π²) Σ (−1)^((k−1)/2) sin(kωt)/k², odd k only',
+                  note: 'Only odd harmonics, falling off as 1/k², so a handful already looks right. No jumps means no Gibbs ripple.' },
+      saw:      { b: k => (k % 2 ? 1 : -1) * 2 / (Math.PI * k), f: x => wrap(x) / Math.PI,
+                  eq: 'x(t) = (2/π) Σ (−1)^(k+1) sin(kωt)/k, every k',
+                  note: 'Every harmonic, falling off as 1/k. This is close to how a bowed violin string moves, which is why its sound is so rich in overtones.' },
+    };
+    let wave = 'square', on = new Array(KMAX + 1).fill(false), last = 0, db = false;
+    const nIn = document.getElementById('fn'), nOut = document.getElementById('fnv');
+    const wBtns = [...document.querySelectorAll('#fwave button')], dbBtn = document.getElementById('fdb');
+    const read = document.getElementById('fread'), feq = document.getElementById('feq'), fnote = document.getElementById('fnote');
+    const tc = document.getElementById('ftime'), scv = document.getElementById('fspec');
+    let T = {}, S = {};
+    fit(tc, (w, h, g) => { T = { w, h, g }; drawF(); });
+    fit(scv, (w, h, g) => { S = { w, h, g }; drawF(); });
+
+    const amp = k => W[wave].b(k);
+    const sum = x => { let y = 0; for (let k = 1; k <= KMAX; k++) if (on[k]) y += amp(k) * Math.sin(k * x); return y; };
+    const highest = () => { for (let k = KMAX; k >= 1; k--) if (on[k] && amp(k)) return k; return 0; };
+    function setN(n) {
+      n = Math.max(1, Math.min(KMAX, n));
+      for (let k = 1; k <= KMAX; k++) on[k] = k <= n;
+      last = n; while (last > 1 && !amp(last)) last--;
+      update();
+    }
+    function update() {
+      const h = highest();
+      nIn.value = Math.max(1, h); nOut.textContent = nOut.value = String(Math.max(1, h));
+      wBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.w === wave)));
+      dbBtn.setAttribute('aria-pressed', String(db));
+      feq.textContent = W[wave].eq; fnote.textContent = W[wave].note;
+      // error and overshoot measured over one period
+      let se = 0, sr = 0, mx = -Infinity; const M = 2000;
+      for (let i = 0; i < M; i++) { const x = -Math.PI + TAU * (i + 0.5) / M, y = sum(x), t = W[wave].f(x); se += (y - t) ** 2; sr += t * t; mx = Math.max(mx, y); }
+      const active = on.slice(1).filter((v, i) => v && amp(i + 1)).length;
+      const over = Math.max(0, (mx - 1) / 2 * 100);
+      read.textContent = active ? `${active} harmonic${active > 1 ? 's' : ''} in the sum. RMS error ${(Math.sqrt(se / sr) * 100).toFixed(1)}%. Peak overshoot ${over.toFixed(1)}% of the jump.` : 'No harmonics in the sum';
+      drawF();
+    }
+
+    function drawF() {
+      if (T.g) {
+        const X = px => (px / T.w) * 2 * TAU - Math.PI;   // two periods across the panel
+        let peak = 1.15; for (let px = 0; px <= T.w; px += 2) peak = Math.max(peak, Math.abs(sum(X(px))) * 1.05);
+        const { w, h, g } = T, pad = 14, mid = h / 2, A = (h / 2 - pad) / peak;
+        g.clearRect(0, 0, w, h);
+        g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 1;
+        g.beginPath(); g.moveTo(0, mid); g.lineTo(w, mid); g.moveTo(0, mid - A); g.lineTo(w, mid - A); g.moveTo(0, mid + A); g.lineTo(w, mid + A); g.stroke();
+        const trace = (f, color, lw, dash) => {
+          g.beginPath(); g.setLineDash(dash || []);
+          let prev = null;
+          for (let px = 0; px <= w; px += 1) {
+            const y = f(X(px));
+            if (prev !== null && Math.abs(y - prev) > 1.2) g.moveTo(px, mid - y * A); else px ? g.lineTo(px, mid - y * A) : g.moveTo(px, mid - y * A);
+            prev = y;
+          }
+          g.strokeStyle = color; g.lineWidth = lw; g.lineJoin = 'round'; g.stroke(); g.setLineDash([]);
+        };
+        trace(W[wave].f, 'rgba(255,255,255,.4)', 1.5, [5, 6]);
+        if (last && amp(last)) trace(x => amp(last) * Math.sin(last * x), on[last] ? '#7fa6ff' : 'rgba(127,166,255,.45)', 1.6);
+        trace(sum, '#ffffff', 2.6);
+      }
+      if (S.g) {
+        const { w, h, g } = S, l = 34, r = 10, top = 12, bot = h - 28;
+        const bw = (w - l - r) / KMAX, b1 = Math.abs(amp(1));
+        const H = k => { const a = Math.abs(amp(k)); if (!a) return 0; if (!db) return a / b1; return Math.max(0, 1 + 20 * Math.log10(a / b1) / 60); };
+        g.clearRect(0, 0, w, h);
+        g.font = '13px Archivo, system-ui, sans-serif'; g.fillStyle = '#93a6cf'; g.textBaseline = 'middle'; g.textAlign = 'right';
+        const ticks = db ? [[1, '0 dB'], [2 / 3, '−20'], [1 / 3, '−40'], [0, '−60']] : [[1, '1'], [0.5, '0.5'], [0, '0']];
+        g.strokeStyle = 'rgba(255,255,255,.1)'; g.lineWidth = 1;
+        for (const [v, t] of ticks) { const y = bot - v * (bot - top); g.fillText(t, l - 6, y); g.beginPath(); g.moveTo(l, y); g.lineTo(w - r, y); g.stroke(); }
+        for (let k = 1; k <= KMAX; k++) {
+          const x = l + (k - 1) * bw, v = H(k), y = bot - v * (bot - top), bwid = Math.max(1.5, bw * 0.62), bx = x + (bw - bwid) / 2;
+          if (!amp(k)) { g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(bx, bot - 1, bwid, 1); continue; }
+          if (on[k]) { g.fillStyle = k === last ? '#7fa6ff' : '#dfe7f8'; g.fillRect(bx, y, bwid, bot - y); }
+          else { g.strokeStyle = 'rgba(223,231,248,.45)'; g.lineWidth = 1; g.strokeRect(bx + 0.5, y + 0.5, bwid - 1, Math.max(0, bot - y - 1)); }
+        }
+        g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillStyle = '#93a6cf';
+        for (const k of (w < 420 ? [1, 10, 20, 30, 40] : [1, 5, 10, 15, 20, 25, 30, 35, 40])) g.fillText(k, l + (k - 0.5) * bw, h - 9);
+      }
+    }
+
+    scv.addEventListener('click', e => {
+      const rect = scv.getBoundingClientRect(), bw = (rect.width - 44) / KMAX;
+      const k = Math.floor((e.clientX - rect.left - 34) / bw) + 1;
+      if (k < 1 || k > KMAX || !amp(k)) return;
+      on[k] = !on[k]; last = k; update();
+    });
+    nIn.addEventListener('input', () => setN(+nIn.value));
+    document.getElementById('fplus').addEventListener('click', () => {
+      for (let k = 1; k <= KMAX; k++) if (!on[k] && amp(k)) { on[k] = true; last = k; break; }
+      update();
+    });
+    document.getElementById('fminus').addEventListener('click', () => {
+      const k = highest(); if (k) { on[k] = false; last = k; }
+      update();
+    });
+    wBtns.forEach(b => b.addEventListener('click', () => { wave = b.dataset.w; setN(+nIn.value); }));
+    dbBtn.addEventListener('click', () => { db = !db; update(); });
+    setN(7);
   }
 
   // ---------- Kuramoto synchronization ----------
